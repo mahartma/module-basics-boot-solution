@@ -27,8 +27,8 @@ public class DummyItemReader implements ItemReader<String> {
 		}
 		else {
 //			throw new RuntimeException("shit");
-			throw new IllegalArgumentException("shit");
-//			return null;
+//			throw new IllegalArgumentException("shit");
+			return null;
 		}
 		
 	}
