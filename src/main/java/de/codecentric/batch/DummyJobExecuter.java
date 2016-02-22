@@ -12,6 +12,7 @@ public class DummyJobExecuter {
 
 	public static void main(String[] args) {
 		ApplicationContext ctx = run(DummyJobExecuter.class, args);
+		//hier kommt MyExitCodeGenerator zurück
 		ExitCodeGenerator exitCodeGenerator = ctx.getBean(ExitCodeGenerator.class);
 		int exitCode = exit(ctx, exitCodeGenerator);
 		System.exit(exitCode);
