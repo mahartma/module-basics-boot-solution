@@ -25,14 +25,17 @@ public class MyExitCodeGenerator implements ApplicationListener<JobExecutionEven
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
 			if (!execution.getStatus().equals(COMPLETED)) {
-				StepExecution stepExecution = execution.getStepExecutions().iterator().next();
-				if (stepExecution.getFailureExceptions().get(0) instanceof IllegalArgumentException) {
-					return 12;
+				for (StepExecution stepExecution : execution.getStepExecutions()) {
+					if (stepExecution.getFailureExceptions().size() > 0) {
+						if (stepExecution.getFailureExceptions().get(0) instanceof IllegalArgumentException) {
+							return 12;
+						}
+						if (stepExecution.getFailureExceptions().get(0) instanceof RuntimeException) {
+							return 10;
+						}
+						return 1;
+					}
 				}
-				if (stepExecution.getFailureExceptions().get(0) instanceof RuntimeException) {
-					return 10;
-				}
-				return 1;
 			}
 		}
 		return 0;

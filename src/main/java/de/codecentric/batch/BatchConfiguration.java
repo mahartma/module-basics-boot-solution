@@ -6,6 +6,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.tasklet.MethodInvokingTaskletAdapter;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -32,10 +33,11 @@ public class BatchConfiguration {
     }    
 
     @Bean
-    public Job dummyJob(JobBuilderFactory jobs, Step dummyStep) {
+    public Job dummyJob(JobBuilderFactory jobs, Step dummyStep, Step initStep) {
 		return jobs.get("dummyJob")
     			.incrementer(new RunIdIncrementer())
-    			.flow(dummyStep)
+    			.flow(initStep)
+    			.next(dummyStep)
     			.end()
     			.build();
     }    
@@ -49,5 +51,14 @@ public class BatchConfiguration {
                 .processor(dummyProcessor)
                 .writer(dummyWriter)
                 .build();
+    }
+    
+    @Bean
+    public Step initStep(StepBuilderFactory stepBuilderFactory) {
+        MethodInvokingTaskletAdapter tasklet = new MethodInvokingTaskletAdapter();
+        tasklet.setTargetObject(new MyTasklet());
+        tasklet.setTargetMethod("execute");
+		return stepBuilderFactory.get("initStep")
+                .tasklet(tasklet).build();
     }
 }
